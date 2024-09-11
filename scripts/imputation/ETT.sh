@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export CUDA_VISIBLE_DEVICES=3
+export CUDA_VISIBLE_DEVICES=0
 
 model_name=Timer
 ckpt_path=checkpoints/Timer_imputation_1.0.ckpt
@@ -9,11 +9,11 @@ d_ff=512
 e_layers=4
 patch_len=24
 
-for subset_rand_ratio in 0.05 0.2 1
+for subset_rand_ratio in 0.05
 do
-for data in ETTh1 ETTh2 ETTm1 ETTm2
+for data in ETTh1
 do
-for mask_rate in 0.125 0.25 0.375 0.5
+for mask_rate in 0.125
 do
 python -u run.py \
   --task_name imputation \
@@ -28,7 +28,7 @@ python -u run.py \
   --features M \
   --seq_len 192 \
   --label_len 0 \
-  --pred_len 192 \   # not used in imputation
+  --pred_len 192 \
   --patch_len $patch_len \
   --e_layers $e_layers \
   --factor 3 \
