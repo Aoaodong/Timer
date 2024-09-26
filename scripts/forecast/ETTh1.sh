@@ -10,7 +10,7 @@ ckpt_path=checkpoints/Timer_forecast_1.0.ckpt
 data=ETTh1
 
 # for subset_rand_ratio in 0.01 0.02 0.03 0.04 0.05 0.1 0.15 0.2 0.25 0.5 0.75 1
-for subset_rand_ratio in 0.01 0.05 0.1 0.5 1
+for subset_rand_ratio in 0.01
 do
 # train
 torchrun --nnodes=1 --nproc_per_node=1 run.py \
@@ -23,7 +23,7 @@ torchrun --nnodes=1 --nproc_per_node=1 run.py \
   --data $data \
   --model_id etth1_sr_$subset_rand_ratio \
   --model $model_name \
-  --features M \
+  --features S \
   --seq_len $seq_len \
   --label_len $label_len \
   --pred_len $pred_len \
@@ -41,6 +41,8 @@ torchrun --nnodes=1 --nproc_per_node=1 run.py \
   --subset_rand_ratio $subset_rand_ratio \
   --itr 1 \
   --gpu 0 \
-  --use_ims
+  --use_ims \
+  --is_finetuning 0
+  # --embed fixed
   # --use_multi_gpu
 done
