@@ -7,6 +7,7 @@ from data_provider.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, \
     Dataset_Custom, Dataset_PEMS, UCRAnomalyloader
 from data_provider.data_loader_benchmark import CIDatasetBenchmark, \
     CIAutoRegressionDatasetBenchmark
+from data_provider.data_loader_custom import DatasetCustom, AutoRegressionDatasetCustom
 
 data_dict = {
     'ETTh1': Dataset_ETT_hour,
@@ -35,32 +36,62 @@ def data_provider(args, flag):
 
     if args.task_name == 'forecast':
         if args.use_ims:
-            data_set = CIAutoRegressionDatasetBenchmark(
-                root_path=os.path.join(args.root_path, args.data_path),
-                flag=flag,
-                input_len=args.seq_len,
-                label_len=args.label_len,
-                pred_len=args.output_len if flag == 'test' else args.pred_len,
-                data_type=args.data,
-                scale=True,
-                timeenc=timeenc,
-                freq=args.freq,
-                stride=args.stride,
-                subset_rand_ratio=args.subset_rand_ratio,
-            )
+            if args.load_type == 'benchmark':
+                data_set = CIAutoRegressionDatasetBenchmark(
+                    root_path=os.path.join(args.root_path, args.data_path),
+                    flag=flag,
+                    input_len=args.seq_len,
+                    label_len=args.label_len,
+                    pred_len=args.output_len if flag == 'test' else args.pred_len,
+                    data_type=args.data,
+                    scale=True,
+                    timeenc=timeenc,
+                    freq=args.freq,
+                    stride=args.stride,
+                    subset_rand_ratio=args.subset_rand_ratio,
+                )
+            elif args.load_type == 'custom':
+                data_set = AutoRegressionDatasetCustom(
+                    root_path=os.path.join(args.root_path, args.data_path).
+                    flag=flag,
+                    input_len=args.seq_len,
+                    label_len=args.label_len,
+                    pred_len=args.output_len if flag == 'test' else args.pred_len,
+                    data_slicing_type='custom',
+                    scale=True,
+                    timeenc=timeenc,
+                    freq=args.freq,
+                    stride=args.stride,
+                    subset_rand_ratio=args.subset_rand_ratio,
+                )
         else:
-            data_set = CIDatasetBenchmark(
-                root_path=os.path.join(args.root_path, args.data_path),
-                flag=flag,
-                input_len=args.seq_len,
-                pred_len=args.pred_len,
-                data_type=args.data,
-                scale=True,
-                timeenc=timeenc,
-                freq=args.freq,
-                stride=args.stride,
-                subset_rand_ratio=args.subset_rand_ratio,
-            )
+            if args.load_type == 'benchmark':
+                data_set = CIDatasetBenchmark(
+                    root_path=os.path.join(args.root_path, args.data_path),
+                    flag=flag,
+                    input_len=args.seq_len,
+                    pred_len=args.pred_len,
+                    data_type=args.data,
+                    scale=True,
+                    timeenc=timeenc,
+                    freq=args.freq,
+                    stride=args.stride,
+                    subset_rand_ratio=args.subset_rand_ratio,
+                )
+            elif args.load_type == 'custom':
+                data_set = DatasetCustom(
+                    root_path=os.path.join(args.root_path, args.data_path).
+                    flag=flag,
+                    input_len=args.seq_len,
+                    pred_len=args.pred_len,
+                    data_slicing_type='custom',
+                    scale=True,
+                    timeenc=timeenc,
+                    freq=args.freq,
+                    stride=args.stride,
+                    subset_rand_ratio=args.subset_rand_ratio,
+                )
+ 
         print(flag, len(data_set))
         if args.use_multi_gpu:
             train_datasampler = DistributedSampler(data_set, shuffle=shuffle_flag)

@@ -132,8 +132,8 @@ class DatasetCustom(Dataset):
             self.data_stamp[key] = data_stamp[border1:border2]
 
             self.n_timepoint[key] = len(self.data_x[key]) - self.input_len - self.pred_len + 1
-            print(data_len, num_train, num_vali, num_test)
-        print(self.n_timepoint)
+        #     print(data_len, num_train, num_vali, num_test)
+        # print(self.n_timepoint)
 
     def __getitem__(self, index):
         internal = 1
@@ -154,7 +154,7 @@ class DatasetCustom(Dataset):
                 seq_y = self.data_y[key][r_begin:r_end, 0]
                 seq_x_mark = self.data_stamp[key][s_begin:s_end]
                 seq_y_mark = self.data_stamp[key][r_begin:r_end]
-
+                
                 return seq_x, seq_y, seq_x_mark, seq_y_mark
 
         raise KeyError('Could not find the index-th data!')
@@ -186,8 +186,8 @@ class AutoRegressionDatasetCustom(DatasetCustom):
             internal = self.internal
         cumulative_n = 0
         for key, n in self.n_timepoint.items():
+            cumulative_n += int(n * internal)
             if index >= cumulative_n:
-                cumulative_n += int(n * internal)
                 continue
             else:
                 s_begin = (index - cumulative_n) % n  # select start time
